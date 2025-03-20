@@ -1,30 +1,57 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const connectDB = require('./config/database');
-const healthLogsRoutes = require('./routes/healthLogs');
-const authRoutes = require('./routes/auth');
 
 const app = express();
-connectDB();
+const PORT = 5000;
 
-// Updated CORS configuration
-app.use(cors());
+// Middleware
 app.use(express.json());
+app.use(cors()); // Allow frontend requests
 
-// Add request logging
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`, req.body);
-    next();
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/MernHealth', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('✅ MongoDB connected to MernHealth database'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
+
+const healthDataSchema = new mongoose.Schema({
+  name: String,
+  bloodPressure: String,
+  sugarLevel: String,
+  heartRate: String,
+  timestamp: { type: Date, default: Date.now },
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/health-logs', healthLogsRoutes);
+const HealthData = mongoose.model('HealthData', healthDataSchema, 'mernapp');
 
-// Move error handler to the end
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    res.status(500).json({ error: err.message || 'Something went wrong!' });
+// Endpoint to receive health data
+app.post('/api/health-data', async (req, res) => {
+  try {
+    const newHealthData = new HealthData(req.body);
+    await newHealthData.save();
+    res.json({ message: 'Health data received!', data: newHealthData });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save health data' });
+  }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Endpoint to fetch all health reports
+app.get('/api/reports', async (req, res) => {
+  try {
+    const reports = await HealthData.find(); // Use HealthData model to fetch data
+    res.json(reports);
+  } catch (error) {
+    console.error('Error fetching reports:', error); // Log the error
+    res.status(500).json({ error: 'Failed to fetch reports' });
+  }
+});
+
+// Test API
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Your MERN environment is working perfectly, my lord!' });
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
