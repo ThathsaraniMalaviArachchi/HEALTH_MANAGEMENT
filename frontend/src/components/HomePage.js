@@ -13,77 +13,77 @@ const HomePage = () => {
         setShowLogs(true);
     };
 
-    return React.createElement('div', { className: 'min-h-screen bg-gray-100 flex flex-col' },
-        //add navbar
-        React.createElement(Navbar),
-        
-        // Main content wrapper with padding for navbar
-        React.createElement('main', { className: 'flex-grow pt-16' },
-            // hero section
-            React.createElement('div', { className: 'bg-gradient-to-r from-blue-500 to-teal-400 text-white py-20 px-4' },
-                React.createElement('div', { className: 'max-w-4xl mx-auto text-center' },
-                    React.createElement('h1', { className: 'text-4xl md:text-6xl font-bold mb-6' }, 'Health Management System'),
-                    React.createElement('p', { className: 'text-xl mb-8' }, 'Track your health metrics and monitor your progress over time'),
-                    React.createElement('div', { className: 'space-x-4' },
-                        React.createElement('button', {
-                            onClick: () => {
-                                setShowForm(true);
-                                setShowLogs(false);
+    return (
+        <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+            {/* Navbar */}
+            <Navbar />
+            
+            {/* Main Content */}
+            <main className="flex-grow pt-16">
+                {/* Hero Section */}
+                <div className="bg-gradient-to-r from-blue-600 to-teal-400 text-white py-24 px-6 text-center shadow-lg">
+                    <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">Health Management System</h1>
+                    <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+                        Track your health metrics and monitor your progress over time with ease.
+                    </p>
+                    <div className="space-x-4">
+                        <button
+                            onClick={() => { setShowForm(true); setShowLogs(false); }}
+                            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-100 transition duration-300 shadow-md"
+                        >
+                            + Add Health Log
+                        </button>
+                        <button
+                            onClick={() => { setShowLogs(true); setShowForm(false); }}
+                            className="bg-transparent border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300 shadow-md"
+                        >
+                            View Health Logs
+                        </button>
+                    </div>
+                </div>
+
+                {/* Features Section */}
+                {!showForm && !showLogs && (
+                    <div className="max-w-7xl mx-auto py-16 px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: 'Automated Data Collection',
+                                description: 'Connect with glucose monitors and BP machines for automatic data recording.'
                             },
-                            className: 'bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors'
-                        }, '+ Add Health Log'),
-                        React.createElement('button', {
-                            onClick: () => {
-                                setShowLogs(true);
-                                setShowForm(false);
+                            {
+                                title: 'Progress Tracking',
+                                description: 'View your health metrics over time with detailed analytics and trends.'
                             },
-                            className: 'bg-transparent border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-500 transition-colors'
-                        }, 'View Health Logs')
-                    )
-                )
-            ),
+                            {
+                                title: 'Data Management',
+                                description: 'Easy to update or remove health logs with full control over your data.'
+                            }
+                        ].map(feature => (
+                            <div key={feature.title} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 border-t-4 border-blue-500">
+                                <h3 className="text-2xl font-semibold mb-3 text-gray-800">{feature.title}</h3>
+                                <p className="text-gray-600">{feature.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
-            // Features Section
-            !showForm && !showLogs && React.createElement('div', { className: 'max-w-6xl mx-auto py-16 px-4 grid grid-cols-1 md:grid-cols-3 gap-8' },
-                [
-                    {
-                        title: 'Automated Data Collection',
-                        description: 'Connect with glucose monitors and BP machines for automatic data recording'
-                    },
-                    {
-                        title: 'Progress Tracking',
-                        description: 'View your health metrics over time with detailed analytics and trends'
-                    },
-                    {
-                        title: 'Data Management',
-                        description: 'Easy to update or remove health logs with full control over your data'
-                    }
-                ].map(feature =>
-                    React.createElement('div', { 
-                        key: feature.title,
-                        className: 'bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow'
-                    },
-                        React.createElement('h3', { className: 'text-xl font-semibold mb-3 text-gray-800' }, feature.title),
-                        React.createElement('p', { className: 'text-gray-600' }, feature.description)
-                    )
-                )
-            ),
+                {/* Conditional Rendering of Form or List */}
+                {showForm && (
+                    <div className="max-w-4xl mx-auto py-12 px-6 bg-white shadow-lg rounded-lg">
+                        <HealthLogForm onSuccess={handleFormSuccess} key={Date.now()} />
+                    </div>
+                )}
 
-            // Conditional Rendering of Form or List
-            showForm && React.createElement('div', { className: 'max-w-4xl mx-auto py-8 px-4' },
-                React.createElement(HealthLogForm, {
-                    onSuccess: handleFormSuccess,
-                    key: Date.now() // Force new instance on each render
-                })
-            ),
-
-            showLogs && React.createElement('div', { className: 'max-w-7xl mx-auto py-8 px-4' },
-                React.createElement(HealthLogList)
-            )
-        ),
-
-        // Add Footer
-        React.createElement(Footer)
+                {showLogs && (
+                    <div className="max-w-7xl mx-auto py-12 px-6 bg-white shadow-lg rounded-lg">
+                        <HealthLogList />
+                    </div>
+                )}
+            </main>
+            
+            {/* Footer */}
+            <Footer />
+        </div>
     );
 };
 
