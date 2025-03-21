@@ -21,26 +21,29 @@ const HomePage = () => {
             {/* Main Content */}
             <main className="flex-grow pt-16">
                 {/* Hero Section */}
-                <div className="bg-gradient-to-r from-blue-600 to-teal-400 text-white py-24 px-6 text-center shadow-lg">
-                    <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
-                        Health Management System
-                    </h1>
-                    <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-                        Track your health metrics and monitor your progress over time with ease.
-                    </p>
-                    <div className="space-x-4">
-                        <button
-                            onClick={() => { setShowForm(true); setShowLogs(false); }}
-                            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
-                        >
-                             Add Health Log
-                        </button>
-                        <button
-                            onClick={() => { setShowLogs(true); setShowForm(false); }}
-                            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
-                        >
-                            View Health Logs
-                        </button>
+                <div className="bg-gradient-to-r from-blue-600 to-teal-400 text-white py-24 px-6 text-center shadow-lg relative" style={{ backgroundImage: 'url(/path/to/home.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-teal-400 opacity-75"></div>
+                    <div className="relative z-10">
+                        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
+                            Health Management System
+                        </h1>
+                        <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+                            Track your health metrics and monitor your progress over time with ease.
+                        </p>
+                        <div className="space-x-4">
+                            <button
+                                onClick={() => { setShowForm(true); setShowLogs(false); }}
+                                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
+                            >
+                                Add Health Log
+                            </button>
+                            <button
+                                onClick={() => { setShowLogs(true); setShowForm(false); }}
+                                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
+                            >
+                                View Health Logs
+                            </button>
+                        </div>
                     </div>
                 </div>
 
