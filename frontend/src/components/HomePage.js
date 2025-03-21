@@ -19,7 +19,7 @@ const HomePage = () => {
         
         // Main content wrapper with padding for navbar
         React.createElement('main', { className: 'flex-grow pt-16' },
-            // Hero Section
+            // hero section
             React.createElement('div', { className: 'bg-gradient-to-r from-blue-500 to-teal-400 text-white py-20 px-4' },
                 React.createElement('div', { className: 'max-w-4xl mx-auto text-center' },
                     React.createElement('h1', { className: 'text-4xl md:text-6xl font-bold mb-6' }, 'Health Management System'),
