@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { jsPDF } from 'jspdf';
 
 const HealthReport = () => {
   const [healthData, setHealthData] = useState([]);
@@ -233,6 +234,23 @@ This report is generated based on limited data and should not replace profession
     }
   };
   
+  // Add a downloadPDF function
+  const downloadPDF = () => {
+    const reportElement = document.querySelector('.ai-report');
+    if (!reportElement) {
+      console.error("Report content not found");
+      return;
+    }
+    const doc = new jsPDF();
+    doc.html(reportElement, {
+      callback: function(pdfDoc) {
+        pdfDoc.save(`${selectedUser || "HealthReport"}.pdf`);
+      },
+      x: 15,
+      y: 15
+    });
+  };
+
   if (loading) return <div>Loading health report...</div>;
   if (error && !healthData.length) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
@@ -493,6 +511,26 @@ This report is generated based on limited data and should not replace profession
           </tbody>
         </table>
       </div>
+
+      {/* Download Report Button */}
+      {aiReport && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <button 
+            onClick={downloadPDF}
+            style={{ 
+              backgroundColor: 'green', 
+              color: 'white', 
+              padding: '10px 20px', 
+              border: 'none', 
+              borderRadius: '5px', 
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
+          >
+            Download Report as PDF
+          </button>
+        </div>
+      )}
 
       <div style={{ marginTop: '20px', fontSize: '0.8em', color: '#7f8c8d', textAlign: 'center' }}>
         <p>This report is generated based on the data you've provided and should not replace professional medical advice.</p>
