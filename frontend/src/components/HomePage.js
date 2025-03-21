@@ -14,7 +14,7 @@ const HomePage = () => {
     };
 
     return React.createElement('div', { className: 'min-h-screen bg-gray-100 flex flex-col' },
-        // Add Navbar
+        //add navbar
         React.createElement(Navbar),
         
         // Main content wrapper with padding for navbar
