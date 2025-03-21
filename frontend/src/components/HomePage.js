@@ -29,13 +29,13 @@ const HomePage = () => {
                     <div className="space-x-4">
                         <button
                             onClick={() => { setShowForm(true); setShowLogs(false); }}
-                            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-100 transition duration-300 shadow-md"
+                            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
                         >
-                            + Add Health Log
+                             Add Health Log
                         </button>
                         <button
                             onClick={() => { setShowLogs(true); setShowForm(false); }}
-                            className="bg-transparent border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300 shadow-md"
+                            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
                         >
                             View Health Logs
                         </button>
