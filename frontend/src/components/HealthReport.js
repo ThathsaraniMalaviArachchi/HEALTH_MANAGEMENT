@@ -176,9 +176,7 @@ const HealthReport = () => {
       const latestRecord = data[data.length - 1];
       const averages = calculateAverages(data);
       
-      // For now, simulate an AI report with a timeout
-      setTimeout(() => {
-        const simReport = `
+      const report = `
 # Health Report for ${latestRecord.name}
 
 ## Summary
@@ -199,9 +197,21 @@ This report analyzes the health metrics for ${latestRecord.name} based on ${data
 The patient has maintained an average systolic blood pressure of ${averages.bp} mmHg, average blood sugar of ${averages.sugar} mg/dL, and an average heart rate of ${averages.heartRate} bpm.
 
 ## Assessment
-${parseInt(averages.bp) > normalRanges.bloodPressure.systolic.max ? 'The blood pressure readings are elevated and warrant monitoring.' : parseInt(averages.bp) < normalRanges.bloodPressure.systolic.min ? 'The blood pressure readings are lower than normal and warrant monitoring.' : 'The blood pressure readings are within normal range.'}
-${parseInt(averages.sugar) > normalRanges.sugarLevel.max ? 'The blood sugar levels are elevated. Consider dietary adjustments.' : parseInt(averages.sugar) < normalRanges.sugarLevel.min ? 'The blood sugar levels are lower than normal. Consider dietary adjustments.' : 'The blood sugar levels are within acceptable range.'}
-${parseInt(averages.heartRate) > normalRanges.heartRate.max ? 'The heart rate is elevated. Consider stress reduction techniques.' : parseInt(averages.heartRate) < normalRanges.heartRate.min ? 'The heart rate is lower than normal. Consider consulting a healthcare provider.' : 'The heart rate is within normal parameters.'}
+${parseInt(averages.bp) > normalRanges.bloodPressure.systolic.max
+  ? 'The blood pressure readings are elevated and warrant monitoring.'
+  : parseInt(averages.bp) < normalRanges.bloodPressure.systolic.min
+    ? 'The blood pressure readings are lower than normal and warrant monitoring.'
+    : 'The blood pressure readings are within normal range.'}
+${parseInt(averages.sugar) > normalRanges.sugarLevel.max
+  ? 'The blood sugar levels are elevated. Consider dietary adjustments.'
+  : parseInt(averages.sugar) < normalRanges.sugarLevel.min
+    ? 'The blood sugar levels are lower than normal. Consider dietary adjustments.'
+    : 'The blood sugar levels are within acceptable range.'}
+${parseInt(averages.heartRate) > normalRanges.heartRate.max
+  ? 'The heart rate is elevated. Consider stress reduction techniques.'
+  : parseInt(averages.heartRate) < normalRanges.heartRate.min
+    ? 'The heart rate is lower than normal. Consider consulting a healthcare provider.'
+    : 'The heart rate is within normal parameters.'}
 
 ## Recommendations
 1. Continue regular monitoring of vital signs
@@ -212,14 +222,10 @@ ${parseInt(averages.heartRate) > normalRanges.heartRate.max ? 'The heart rate is
 
 ## Disclaimer
 This report is generated based on limited data and should not replace professional medical advice.
-        `;
-        
-        setAiReport(simReport);
-        setAiLoading(false);
-      }, 1500); // Simulate API delay
+    `;
       
-      // In a real implementation, you would call OpenAI API here
-      
+      setAiReport(report);
+      setAiLoading(false);
     } catch (err) {
       console.error('Error generating AI report:', err);
       setError(prev => prev || 'Failed to generate AI report. Using standard report instead.');
