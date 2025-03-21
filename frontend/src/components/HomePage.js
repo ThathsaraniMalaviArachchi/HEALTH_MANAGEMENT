@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import homeCover from '../images/homeCover.jpg';
 import HealthLogList from './HealthLogList';
 import HealthLogForm from './HealthLogForm';
 import Navbar from './Navbar';
@@ -19,9 +20,9 @@ const HomePage = () => {
             <Navbar />
             
             {/* Main Content */}
-            <main className="flex-grow pt-16">
+            <div className="flex-grow pt-16">
                 {/* Hero Section */}
-                <div className="bg-gradient-to-r from-blue-600 to-teal-400 text-white py-24 px-6 text-center shadow-lg relative" style={{ backgroundImage: 'url(/path/to/home.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                <div className="relative text-white py-24 px-6 text-center shadow-lg" style={{ backgroundImage: `url(${homeCover})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-teal-400 opacity-75"></div>
                     <div className="relative z-10">
                         <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
@@ -49,30 +50,32 @@ const HomePage = () => {
 
                 {/* Features Section */}
                 {!showForm && !showLogs && (
-                    <div className="max-w-7xl mx-auto py-16 px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                            {
-                                title: 'Automated Data Collection',
-                                description: 'Connect with glucose monitors and BP machines for automatic data recording.'
-                            },
-                            {
-                                title: 'Progress Tracking',
-                                description: 'View your health metrics over time with detailed analytics and trends.'
-                            },
-                            {
-                                title: 'Data Management',
-                                description: 'Easy to update or remove health logs with full control over your data.'
-                            }
-                        ].map(feature => (
-                            <div key={feature.title} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 border-t-4 border-blue-500">
-                                <h3 className="text-2xl font-bold mb-3 text-gray-800">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-gray-600 leading-relaxed">
-                                    {feature.description}
-                                </p>
-                            </div>
-                        ))}
+                    <div className="relative bg-gradient-to-r from-blue-600 to-teal-400 text-white py-16 px-6">
+                        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {[
+                                {
+                                    title: 'Automated Data Collection',
+                                    description: 'Connect with glucose monitors and BP machines for automatic data recording.'
+                                },
+                                {
+                                    title: 'Progress Tracking',
+                                    description: 'View your health metrics over time with detailed analytics and trends.'
+                                },
+                                {
+                                    title: 'Data Management',
+                                    description: 'Easy to update or remove health logs with full control over your data.'
+                                }
+                            ].map(feature => (
+                                <div key={feature.title} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 border-t-4 border-blue-500 text-gray-800">
+                                    <h3 className="text-2xl font-bold mb-3">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="leading-relaxed">
+                                        {feature.description}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 
@@ -88,7 +91,7 @@ const HomePage = () => {
                         <HealthLogList />
                     </div>
                 )}
-            </main>
+            </div>
             
             {/* Footer */}
             <Footer />
