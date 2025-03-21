@@ -12,7 +12,7 @@ const Navbar = () => {
             },
                 React.createElement('div', {
                     className: 'flex-shrink-0 text-white font-bold text-2xl transform hover:scale-105 transition-transform duration-200'
-                }, '🏥 HealthTracker')
+                }, )
             )
         )
     );
