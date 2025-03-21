@@ -22,8 +22,10 @@ const HomePage = () => {
             <main className="flex-grow pt-16">
                 {/* Hero Section */}
                 <div className="bg-gradient-to-r from-blue-600 to-teal-400 text-white py-24 px-6 text-center shadow-lg">
-                    <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">Health Management System</h1>
-                    <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+                    <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
+                        Health Management System
+                    </h1>
+                    <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
                         Track your health metrics and monitor your progress over time with ease.
                     </p>
                     <div className="space-x-4">
@@ -60,8 +62,12 @@ const HomePage = () => {
                             }
                         ].map(feature => (
                             <div key={feature.title} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 border-t-4 border-blue-500">
-                                <h3 className="text-2xl font-semibold mb-3 text-gray-800">{feature.title}</h3>
-                                <p className="text-gray-600">{feature.description}</p>
+                                <h3 className="text-2xl font-bold mb-3 text-gray-800">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-gray-600 leading-relaxed">
+                                    {feature.description}
+                                </p>
                             </div>
                         ))}
                     </div>
