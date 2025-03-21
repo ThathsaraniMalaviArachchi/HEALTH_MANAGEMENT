@@ -8,23 +8,15 @@ const Footer = () => {
             className: 'max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8'
         },
             React.createElement('div', {
-                className: 'grid grid-cols-1 md:grid-cols-3 gap-12'
+                className: 'grid grid-cols-1 md:grid-cols-4 gap-12'
             },
                 React.createElement('div', {
                     className: 'space-y-4'
                 },
                     React.createElement('h3', {
-                        className: 'text-2xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent'
-                    }, '🏥 HealthTracker'),
-                    React.createElement('p', {
-                        className: 'text-gray-400 leading-relaxed'
-                    }, 'Empowering you to take control of your health journey.')
-                ),
-                React.createElement('div', null,
-                    React.createElement('h3', {
                         className: 'text-lg font-semibold mb-4'
                     }, 'Quick Links'),
-                    ['About Us', 'Features', 'Privacy Policy'].map(item =>
+                    ['About Us', 'Features', 'Privacy Policy', 'Contact Us'].map(item =>
                         React.createElement('a', {
                             key: item,
                             href: '#',
@@ -32,20 +24,45 @@ const Footer = () => {
                         }, item)
                     )
                 ),
-                React.createElement('div', null,
+                React.createElement('div', {
+                    className: 'space-y-4'
+                },
                     React.createElement('h3', {
                         className: 'text-lg font-semibold mb-4'
                     }, 'Connect With Us'),
-                    React.createElement('div', {
-                        className: 'flex space-x-4'
-                    },
-                        ['Twitter', 'LinkedIn', 'GitHub'].map(item =>
-                            React.createElement('a', {
-                                key: item,
-                                href: '#',
-                                className: 'text-gray-400 hover:text-white'
-                            }, item)
-                        )
+                    ['Twitter', 'LinkedIn', 'GitHub', 'Facebook'].map(item =>
+                        React.createElement('a', {
+                            key: item,
+                            href: '#',
+                            className: 'block text-gray-400 hover:text-white mb-2'
+                        }, item)
+                    )
+                ),
+                React.createElement('div', {
+                    className: 'space-y-4'
+                },
+                    React.createElement('h3', {
+                        className: 'text-lg font-semibold mb-4'
+                    }, 'Contact Information'),
+                    React.createElement('p', {
+                        className: 'text-gray-400'
+                    }, 'Email: support@healthtracker.com'),
+                    React.createElement('p', {
+                        className: 'text-gray-400'
+                    }, 'Phone: +1 234 567 890')
+                ),
+                React.createElement('div', {
+                    className: 'space-y-4'
+                },
+                    React.createElement('h3', {
+                        className: 'text-lg font-semibold mb-4'
+                    }, 'Resources'),
+                    ['Blog', 'Help Center', 'Terms of Service'].map(item =>
+                        React.createElement('a', {
+                            key: item,
+                            href: '#',
+                            className: 'block text-gray-400 hover:text-white mb-2'
+                        }, item)
                     )
                 )
             ),
