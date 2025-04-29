@@ -3,10 +3,12 @@ import HealthForm from './components/HealthForm';
 import HealthDataTable from './components/HealthDataTable';
 import HealthData from './components/HealthData';
 import HealthReport from './components/HealthReport';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 function App() {
   const [showHealthData, setShowHealthData] = useState(false);
-
+<Navbar/>
   const styles = {
     container: {
       maxWidth: '1200px',
@@ -74,6 +76,7 @@ function App() {
       </div>
       
       {showHealthData ? <HealthData /> : <HealthReport />}
+      <Footer />
     </div>
   );
 }
