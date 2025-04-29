@@ -2,16 +2,23 @@ import React, { useState } from 'react';
 import homeCover from '../images/homeCover.jpg';
 import HealthLogList from './HealthLogList';
 import HealthLogForm from './HealthLogForm';
+import AdvancedReport from './AdvancedReport';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 const HomePage = () => {
     const [showForm, setShowForm] = useState(false);
     const [showLogs, setShowLogs] = useState(false);
+    const [showAdvancedReport, setShowAdvancedReport] = useState(false);
 
     const handleFormSuccess = () => {
         setShowForm(false);
         setShowLogs(true);
+    };
+
+    const handleShowAdvancedReport = () => {
+        setShowAdvancedReport(true);
+        setShowForm(false);
     };
 
     return (
@@ -43,6 +50,12 @@ const HomePage = () => {
                                 className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
                             >
                                 View Health Logs
+                            </button>
+                            <button
+                                onClick={handleShowAdvancedReport}
+                                className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300 shadow-md border-2 border-white hover:border-gray-200 transform hover:scale-105"
+                            >
+                                Advanced Report
                             </button>
                         </div>
                     </div>
@@ -90,6 +103,11 @@ const HomePage = () => {
                     <div className="max-w-7xl mx-auto py-12 px-6 bg-white shadow-lg rounded-lg">
                         <HealthLogList />
                     </div>
+                )}
+
+                {/* Advanced Report Modal */}
+                {showAdvancedReport && (
+                    <AdvancedReport onClose={() => setShowAdvancedReport(false)} />
                 )}
             </div>
             
