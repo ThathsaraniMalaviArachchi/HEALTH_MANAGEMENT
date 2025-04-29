@@ -97,6 +97,12 @@ const AdvancedReport = ({ onClose }) => {
             </svg>
           </button>
         </div>
+        
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+          <p className="text-yellow-700 font-medium">
+            Disclaimer: This is not professional medical advice. Always consult with a healthcare provider for medical decisions.
+          </p>
+        </div>
 
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-2">Analysis Period</h3>
