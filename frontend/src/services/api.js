@@ -68,5 +68,15 @@ export const healthLogsAPI = {
             console.error('Error deleting health log:', error);
             throw error;
         }
+    },
+    
+    generateAIReport: async () => {
+        try {
+            const response = await api.get('/health-logs/generate-report');
+            return response.data;
+        } catch (error) {
+            console.error('Error generating AI report:', error);
+            throw error;
+        }
     }
 };

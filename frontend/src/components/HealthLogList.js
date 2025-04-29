@@ -12,6 +12,9 @@ const HealthLogList = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [showReport, setShowReport] = useState(false);
     const [report, setReport] = useState(null);
+    const [aiReport, setAiReport] = useState(null);
+    const [showAiReport, setShowAiReport] = useState(false);
+    const [generatingAiReport, setGeneratingAiReport] = useState(false);
 
     const fetchLogs = async () => {
         try {
@@ -138,6 +141,27 @@ const HealthLogList = () => {
         doc.save('health-report.pdf');
     };
 
+    const generateAIReport = async () => {
+        if (logs.length === 0) {
+            alert('No health logs available to generate AI report');
+            return;
+        }
+
+        try {
+            setGeneratingAiReport(true);
+            setShowAiReport(false);
+            
+            const response = await healthLogsAPI.generateAIReport();
+            setAiReport(response.report);
+            setShowAiReport(true);
+        } catch (error) {
+            console.error('Error generating AI report:', error);
+            alert('Failed to generate AI report. Please try again.');
+        } finally {
+            setGeneratingAiReport(false);
+        }
+    };
+
     if (loading) {
         return React.createElement('div', { 
             className: 'flex items-center justify-center min-h-[400px]'
@@ -175,7 +199,51 @@ const HealthLogList = () => {
                     className: 'bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
                     '📥 Download PDF'
+                ),
+                React.createElement('button', {
+                    onClick: generateAIReport,
+                    disabled: generatingAiReport,
+                    className: `bg-purple-600 text-white px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2 ${generatingAiReport ? 'opacity-75 cursor-not-allowed' : 'hover:bg-purple-700'}`
+                }, 
+                    generatingAiReport ? 'Generating...' : '🤖 Generate AI Report'
                 )
+            )
+        ),
+        
+        // AI Report Loading Indicator
+        generatingAiReport && React.createElement('div', { 
+            className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+        },
+            React.createElement('div', { 
+                className: 'bg-white p-8 rounded-xl shadow-xl flex flex-col items-center'
+            },
+                React.createElement('div', { 
+                    className: 'animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4'
+                }),
+                React.createElement('p', { 
+                    className: 'text-lg text-gray-800'
+                }, 'Generating AI Health Report...'),
+                React.createElement('p', { 
+                    className: 'text-sm text-gray-500 mt-2'
+                }, 'Please wait, this may take a minute.')
+            )
+        ),
+        
+        // Show AI Report Section
+        showAiReport && aiReport && React.createElement('div', { 
+            className: 'bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100 transform transition-all duration-200 hover:shadow-xl'
+        },
+            React.createElement('div', { className: 'flex justify-between items-center mb-4' },
+                React.createElement('h3', { className: 'text-xl font-semibold text-purple-700' }, 'AI Health Analysis Report'),
+                React.createElement('button', {
+                    onClick: () => setShowAiReport(false),
+                    className: 'text-gray-500 hover:text-gray-700'
+                }, '✕')
+            ),
+            React.createElement('div', { className: 'prose max-w-none' },
+                React.createElement('div', {
+                    dangerouslySetInnerHTML: { __html: aiReport.replace(/\n/g, '<br />') }
+                })
             )
         ),
         
