@@ -9,7 +9,7 @@ const auth = async (req, res, next) => {
         // Original authentication code commented for now
         /*
         const token = req.header('Authorization').replace('Bearer ', '');
-        const decoded = jwt.verify(token, 'your_jwt_secret');
+        const decoded = jwt.verify(token, 'your_jwt_secret1111');
         req.userId = decoded.userId;
         next();
         */
