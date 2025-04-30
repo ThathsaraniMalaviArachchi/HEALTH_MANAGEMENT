@@ -13,6 +13,7 @@ const HealthLogList = () => {
     const [showReport, setShowReport] = useState(false);
     const [report, setReport] = useState(null);
     const [aiReport, setAiReport] = useState(null);
+    const [aiReportMetadata, setAiReportMetadata] = useState(null);
     const [showAiReport, setShowAiReport] = useState(false);
     const [generatingAiReport, setGeneratingAiReport] = useState(false);
 
@@ -153,6 +154,11 @@ const HealthLogList = () => {
             
             const response = await healthLogsAPI.generateAIReport();
             setAiReport(response.report);
+            setAiReportMetadata({
+                generatedDate: response.generatedDate,
+                dataPoints: response.dataPoints,
+                averages: response.averages
+            });
             setShowAiReport(true);
         } catch (error) {
             console.error('Error generating AI report:', error);
@@ -160,6 +166,112 @@ const HealthLogList = () => {
         } finally {
             setGeneratingAiReport(false);
         }
+    };
+
+    const downloadAIReportPDF = () => {
+        if (!aiReport) {
+            alert('Please generate AI report first');
+            return;
+        }
+
+        const doc = new jsPDF();
+        const lineHeight = 10;
+        let y = 20;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 20;
+        const textWidth = pageWidth - (margin * 2);
+
+        // Add fancy header
+        doc.setFillColor(66, 135, 245);
+        doc.rect(0, 0, pageWidth, 40, 'F');
+        
+        // Title
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.text('AI Health Analysis Report', pageWidth/2, 25, { align: 'center' });
+        
+        // Reset text color
+        doc.setTextColor(0, 0, 0);
+        y = 50;
+        
+        // Add report metadata
+        doc.setFontSize(12);
+        doc.text(`Report Generated: ${new Date(aiReportMetadata?.generatedDate || Date.now()).toLocaleDateString()}`, margin, y);
+        y += lineHeight;
+        doc.text(`Total Data Points Analyzed: ${aiReportMetadata?.dataPoints || logs.length}`, margin, y);
+        y += lineHeight * 2;
+
+        // Add averages if available
+        if (aiReportMetadata?.averages) {
+            const { averages } = aiReportMetadata;
+            doc.text('Health Metrics Overview:', margin, y);
+            y += lineHeight;
+            doc.text(`• Blood Pressure: ${averages.blood_pressure_systolic}/${averages.blood_pressure_diastolic} mmHg`, margin + 5, y);
+            y += lineHeight;
+            doc.text(`• Glucose Level: ${averages.glucose_level} mg/dL`, margin + 5, y);
+            y += lineHeight;
+            doc.text(`• Heart Rate: ${averages.heart_rate} BPM`, margin + 5, y);
+            y += lineHeight * 2;
+        }
+        
+        // Horizontal line
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, y, pageWidth - margin, y);
+        y += lineHeight;
+
+        // Process the AI report text - split into sections
+        const sections = aiReport.split(/\n\s*\n/);
+        
+        // Add each section
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            // Check if this is a new section header (all caps or ends with a colon)
+            const lines = section.split('\n');
+            
+            lines.forEach((line, index) => {
+                // Check if we need a new page
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                // Check if line looks like a header
+                if ((line.toUpperCase() === line && line.length > 3) || 
+                    line.endsWith(':') || 
+                    index === 0 && lines.length > 1) {
+                    // This is likely a section header
+                    doc.setFontSize(14);
+                    doc.setFont(undefined, 'bold');
+                    
+                    // Wrap text for header (will likely be short)
+                    const textLines = doc.splitTextToSize(line, textWidth);
+                    doc.text(textLines, margin, y);
+                    y += lineHeight * textLines.length;
+                    
+                    // Reset font
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'normal');
+                } else {
+                    // Regular content - wrap text
+                    const textLines = doc.splitTextToSize(line, textWidth);
+                    doc.text(textLines, margin, y);
+                    y += lineHeight * 0.9 * textLines.length;
+                }
+            });
+            
+            // Add space between sections
+            y += lineHeight;
+        });
+
+        // Add footer
+        const footerY = doc.internal.pageSize.getHeight() - 10;
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Generated by Aura Health Management System', pageWidth/2, footerY, { align: 'center' });
+
+        // Save the PDF
+        doc.save('ai-health-analysis-report.pdf');
     };
 
     if (loading) {
@@ -186,26 +298,32 @@ const HealthLogList = () => {
                 className: 'text-3xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent'
             }, 'Health Logs'),
             React.createElement('div', { 
-                className: 'flex space-x-4'
+                className: 'flex flex-wrap gap-3'
             },
                 React.createElement('button', {
                     onClick: generateReport,
-                    className: 'bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
+                    className: 'bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
                     '📊 Generate Report'
                 ),
                 React.createElement('button', {
                     onClick: downloadPDF,
-                    className: 'bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
+                    className: 'bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
-                    '📥 Download PDF'
+                    '📥 Download Report'
                 ),
                 React.createElement('button', {
                     onClick: generateAIReport,
                     disabled: generatingAiReport,
-                    className: `bg-purple-600 text-white px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2 ${generatingAiReport ? 'opacity-75 cursor-not-allowed' : 'hover:bg-purple-700'}`
+                    className: `bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2 ${generatingAiReport ? 'opacity-75 cursor-not-allowed' : 'hover:bg-purple-700'}`
                 }, 
                     generatingAiReport ? 'Generating...' : '🤖 Generate AI Report'
+                ),
+                showAiReport && React.createElement('button', {
+                    onClick: downloadAIReportPDF,
+                    className: 'bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
+                }, 
+                    '📥 Download AI Report'
                 )
             )
         ),
@@ -235,13 +353,20 @@ const HealthLogList = () => {
         },
             React.createElement('div', { className: 'flex justify-between items-center mb-4' },
                 React.createElement('h3', { className: 'text-xl font-semibold text-purple-700' }, 'AI Health Analysis Report'),
-                React.createElement('button', {
-                    onClick: () => setShowAiReport(false),
-                    className: 'text-gray-500 hover:text-gray-700'
-                }, '✕')
+                React.createElement('div', { className: 'flex gap-2' },
+                    React.createElement('button', {
+                        onClick: downloadAIReportPDF,
+                        className: 'bg-purple-600 text-white px-3 py-1 text-sm rounded-lg hover:bg-purple-700 transition-colors duration-200'
+                    }, '📥 Download PDF'),
+                    React.createElement('button', {
+                        onClick: () => setShowAiReport(false),
+                        className: 'text-gray-500 hover:text-gray-700'
+                    }, '✕')
+                )
             ),
             React.createElement('div', { className: 'prose max-w-none' },
                 React.createElement('div', {
+                    className: 'ai-report whitespace-pre-line',
                     dangerouslySetInnerHTML: { __html: aiReport.replace(/\n/g, '<br />') }
                 })
             )
