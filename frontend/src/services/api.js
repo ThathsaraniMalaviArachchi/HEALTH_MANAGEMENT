@@ -70,9 +70,9 @@ export const healthLogsAPI = {
         }
     },
     
-    generateAIReport: async () => {
+    getAIReport: async () => {
         try {
-            const response = await api.get('/health-logs/generate-report');
+            const response = await api.get('/health-logs/ai-report');
             return response.data;
         } catch (error) {
             console.error('Error generating AI report:', error);
