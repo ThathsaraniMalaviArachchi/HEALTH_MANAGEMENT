@@ -108,6 +108,15 @@ const HealthLogList = () => {
         }
     };
 
+    const shareToWhatsApp = (reportType) => {
+        const text = reportType === 'regular' 
+            ? `Health Report Summary:\n\nDate Range: ${report.dateRange.start} to ${report.dateRange.end}\nTotal Entries: ${report.totalEntries}\nAvg. Blood Pressure: ${report.averages.systolic}/${report.averages.diastolic} mmHg\nAvg. Glucose: ${report.averages.glucose} mg/dL\nAvg. Heart Rate: ${report.averages.heartRate} BPM`
+            : `AI Health Analysis Report:\n\n${aiReport.report}`;
+            
+        const encodedText = encodeURIComponent(text);
+        window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+    };
+
     const downloadPDF = () => {
         if (!report) {
             alert('Please generate report first');
@@ -221,19 +230,19 @@ const HealthLogList = () => {
                     onClick: generateReport,
                     className: 'bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
-                    '📊 Generate Report'
+                    'Generate Report'
                 ),
                 React.createElement('button', {
                     onClick: generateAIReport,
                     className: 'bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
-                    '🧠 AI Health Analysis'
+                    ' AI Health Analysis'
                 ),
                 React.createElement('button', {
                     onClick: downloadPDF,
                     className: 'bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
-                    '📥 Download Report'
+                    ' Download Report'
                 )
             )
         ),
@@ -262,6 +271,17 @@ const HealthLogList = () => {
                         className: 'text-white bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm'
                     }, 'Download PDF'),
                     React.createElement('button', {
+                        onClick: () => shareToWhatsApp('ai'),
+                        className: 'text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm flex items-center'
+                    }, 
+                        React.createElement('span', {
+                            className: 'mr-1',
+                            role: 'img',
+                            'aria-label': 'WhatsApp'
+                        }, ),
+                        'Share to WhatsApp'
+                    ),
+                    React.createElement('button', {
                         onClick: () => setShowAIReport(false),
                         className: 'text-gray-500 hover:text-gray-700'
                     }, '✕')
@@ -281,10 +301,22 @@ const HealthLogList = () => {
         },
             React.createElement('div', { className: 'flex justify-between items-center mb-4' },
                 React.createElement('h3', { className: 'text-xl font-semibold' }, 'Health Report Summary'),
-                React.createElement('button', {
-                    onClick: () => setShowReport(false),
-                    className: 'text-gray-500 hover:text-gray-700'
-                }, '✕')
+                React.createElement('div', { className: 'flex gap-2' },
+                    React.createElement('button', {
+                        onClick: () => shareToWhatsApp('regular'),
+                        className: 'text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm flex items-center'
+                    }, 
+                        React.createElement('span', {
+                            className: 'mr-1',
+                            dangerouslySetInnerHTML: { __html: '&nbsp;<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.415 14.382c-.298-.149-1.759-.867-2.031-.967-.272-.099-.47-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.019-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.669-1.612-.916-2.207-.241-.579-.486-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.15.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.57-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M20.516 3.455C18.246 1.229 15.17 0 11.939 0 5.409 0 .095 5.313.094 11.845c0 2.087.547 4.126 1.589 5.928L0 24l6.36-1.663c1.737.95 3.699 1.45 5.696 1.45 6.53 0 11.844-5.313 11.845-11.845 0-3.163-1.231-6.138-3.385-8.486zM11.939 21.621c-1.771 0-3.506-.473-5.022-1.366l-.355-.215-3.735.979 1.004-3.695-.236-.377c-.98-1.551-1.499-3.35-1.499-5.202C2.094 6.641 6.455 2.28 11.939 2.28c2.644 0 5.127 1.03 6.991 2.895 1.863 1.866 2.891 4.394 2.89 7.05.001 5.398-4.36 9.76-9.881 9.76z"/></svg>&nbsp;' }
+                        }),
+                        'Share to WhatsApp'
+                    ),
+                    React.createElement('button', {
+                        onClick: () => setShowReport(false),
+                        className: 'text-gray-500 hover:text-gray-700 ml-2'
+                    }, '✕')
+                )
             ),
             React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' },
                 React.createElement('div', null,
