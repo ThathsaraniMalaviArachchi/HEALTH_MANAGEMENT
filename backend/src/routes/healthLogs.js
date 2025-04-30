@@ -7,6 +7,6 @@ router.post('/', auth, healthLogController.create);
 router.get('/', auth, healthLogController.getAll);
 router.put('/:id', auth, healthLogController.update);
 router.delete('/:id', auth, healthLogController.delete);
-router.get('/generate-report', auth, healthLogController.generateAIReport);
+router.get('/ai-report', auth, healthLogController.generateAIReport);
 
 module.exports = router;

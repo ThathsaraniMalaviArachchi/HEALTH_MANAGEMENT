@@ -1,21 +1,10 @@
 const HealthLog = require('../models/HealthLog');
 const dotenv = require('dotenv');
 const path = require('path');
+const axios = require('axios');
 
 // Load environment variables from .env file in the root directory
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-const { OpenAI } = require('openai');
-
-// Check if API key exists and create OpenAI client
-const openaiApiKey = process.env.OPENAI_API_KEY;
-if (!openaiApiKey || openaiApiKey === 'YOUR_OPENAI_API_KEY_HERE') {
-    console.error('Warning: OpenAI API key is not properly configured!');
-}
-
-const openai = new OpenAI({
-    apiKey: openaiApiKey,
-});
 
 const healthLogController = {
     create: async (req, res) => {
@@ -67,71 +56,62 @@ const healthLogController = {
             res.status(500).json({ error: error.message });
         }
     },
-
+    
     generateAIReport: async (req, res) => {
         try {
-            // Verify API key is available
-            if (!openaiApiKey || openaiApiKey === 'YOUR_OPENAI_API_KEY_HERE') {
-                return res.status(500).json({ 
-                    error: 'OpenAI API key not configured. Please set the OPENAI_API_KEY environment variable.' 
-                });
-            }
-            
-            // Get all health logs for the user for a more comprehensive analysis
+            // Get the last 5 health logs
             const logs = await HealthLog.find({ user_id: req.userId })
-                .sort({ date: -1 });
-            
-            if (!logs || logs.length === 0) {
-                return res.status(404).json({ error: 'No health logs found' });
+                .sort({ date: -1 })
+                .limit(5);
+                
+            if (logs.length === 0) {
+                return res.status(400).json({ error: 'No health logs found for analysis' });
             }
 
-            // Calculate averages for a better report
-            const averages = {
-                blood_pressure_systolic: Math.round(logs.reduce((acc, log) => acc + log.blood_pressure_systolic, 0) / logs.length),
-                blood_pressure_diastolic: Math.round(logs.reduce((acc, log) => acc + log.blood_pressure_diastolic, 0) / logs.length),
-                glucose_level: Math.round(logs.reduce((acc, log) => acc + log.glucose_level, 0) / logs.length),
-                heart_rate: Math.round(logs.reduce((acc, log) => acc + log.heart_rate, 0) / logs.length)
-            };
+            // Format the logs for the OpenAI API
+            const formattedLogs = logs.map(log => ({
+                date: new Date(log.date).toLocaleDateString(),
+                blood_pressure: `${log.blood_pressure_systolic}/${log.blood_pressure_diastolic}`,
+                glucose_level: log.glucose_level,
+                heart_rate: log.heart_rate,
+                notes: log.notes || 'No notes provided'
+            }));
 
-            // Format logs for OpenAI with proper field names from our schema
-            const logsData = logs.map(log => {
-                return {
-                    date: new Date(log.date).toISOString().split('T')[0],
-                    blood_pressure: `${log.blood_pressure_systolic}/${log.blood_pressure_diastolic}`,
-                    glucose_level: log.glucose_level,
-                    heart_rate: log.heart_rate
-                };
-            });
-
-            // Generate report using OpenAI
-            const completion = await openai.chat.completions.create({
+            // Prepare the message for OpenAI
+            const prompt = {
                 model: "gpt-3.5-turbo",
                 messages: [
-                    { 
-                        role: "system", 
-                        content: "You are a health analytics assistant. Analyze the given health logs and provide useful insights, trends, and recommendations. Format your response with clear sections including: Summary, Trends Analysis, Health Insights, and Recommendations."
+                    {
+                        role: "system",
+                        content: "You are a health analytics assistant. Analyze the health logs and provide insights, trends, and recommendations. Focus on blood pressure, glucose levels, and heart rate patterns."
                     },
                     {
-                        role: "user", 
-                        content: `Please analyze these health logs and provide a comprehensive health report. Include analysis of blood pressure, glucose levels, and heart rate trends. Here are the logs: ${JSON.stringify(logsData)}. The average values are: Blood Pressure: ${averages.blood_pressure_systolic}/${averages.blood_pressure_diastolic} mmHg, Glucose Level: ${averages.glucose_level} mg/dL, Heart Rate: ${averages.heart_rate} BPM.`
+                        role: "user",
+                        content: `Please analyze these health logs and provide a detailed report with insights, trends, and health recommendations: ${JSON.stringify(formattedLogs)}`
                     }
-                ],
-                temperature: 0.7,
-                max_tokens: 1500
-            });
-
-            const aiReport = completion.choices[0].message.content;
+                ]
+            };
             
-            // Return report with additional metadata for better PDF generation
-            res.json({ 
-                report: aiReport,
-                generatedDate: new Date().toISOString(),
-                dataPoints: logs.length,
-                averages: averages
+            // Send request to OpenAI API
+            const openaiResponse = await axios.post('https://api.openai.com/v1/chat/completions', prompt, {
+                headers: {
+                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
             });
+            
+            // Return the AI-generated report
+            res.json({ 
+                report: openaiResponse.data.choices[0].message.content,
+                logs: formattedLogs
+            });
+            
         } catch (error) {
-            console.error('Error generating AI report:', error);
-            res.status(500).json({ error: 'Failed to generate AI report: ' + error.message });
+            console.error('Error generating AI report:', error.response?.data || error.message);
+            res.status(500).json({ 
+                error: 'Failed to generate AI report', 
+                details: error.message
+            });
         }
     }
 };

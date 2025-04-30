@@ -12,10 +12,9 @@ const HealthLogList = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [showReport, setShowReport] = useState(false);
     const [report, setReport] = useState(null);
-    const [aiReport, setAiReport] = useState(null);
-    const [aiReportMetadata, setAiReportMetadata] = useState(null);
-    const [showAiReport, setShowAiReport] = useState(false);
-    const [generatingAiReport, setGeneratingAiReport] = useState(false);
+    const [aiReport, setAIReport] = useState(null);
+    const [showAIReport, setShowAIReport] = useState(false);
+    const [loadingAI, setLoadingAI] = useState(false);
 
     const fetchLogs = async () => {
         try {
@@ -87,6 +86,37 @@ const HealthLogList = () => {
         setShowReport(true);
     };
 
+    const generateAIReport = async () => {
+        if (logs.length === 0) {
+            alert('No health logs available for AI analysis');
+            return;
+        }
+
+        try {
+            setLoadingAI(true);
+            setError(null);
+            setShowAIReport(false);
+            
+            const response = await healthLogsAPI.getAIReport();
+            setAIReport(response);
+            setShowAIReport(true);
+        } catch (error) {
+            console.error('Error generating AI report:', error);
+            setError('Failed to generate AI report. Please try again later.');
+        } finally {
+            setLoadingAI(false);
+        }
+    };
+
+    const shareToWhatsApp = (reportType) => {
+        const text = reportType === 'regular' 
+            ? `Health Report Summary:\n\nDate Range: ${report.dateRange.start} to ${report.dateRange.end}\nTotal Entries: ${report.totalEntries}\nAvg. Blood Pressure: ${report.averages.systolic}/${report.averages.diastolic} mmHg\nAvg. Glucose: ${report.averages.glucose} mg/dL\nAvg. Heart Rate: ${report.averages.heartRate} BPM`
+            : `AI Health Analysis Report:\n\n${aiReport.report}`;
+            
+        const encodedText = encodeURIComponent(text);
+        window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+    };
+
     const downloadPDF = () => {
         if (!report) {
             alert('Please generate report first');
@@ -142,32 +172,6 @@ const HealthLogList = () => {
         doc.save('health-report.pdf');
     };
 
-    const generateAIReport = async () => {
-        if (logs.length === 0) {
-            alert('No health logs available to generate AI report');
-            return;
-        }
-
-        try {
-            setGeneratingAiReport(true);
-            setShowAiReport(false);
-            
-            const response = await healthLogsAPI.generateAIReport();
-            setAiReport(response.report);
-            setAiReportMetadata({
-                generatedDate: response.generatedDate,
-                dataPoints: response.dataPoints,
-                averages: response.averages
-            });
-            setShowAiReport(true);
-        } catch (error) {
-            console.error('Error generating AI report:', error);
-            alert('Failed to generate AI report. Please try again.');
-        } finally {
-            setGeneratingAiReport(false);
-        }
-    };
-
     const downloadAIReportPDF = () => {
         if (!aiReport) {
             alert('Please generate AI report first');
@@ -177,101 +181,23 @@ const HealthLogList = () => {
         const doc = new jsPDF();
         const lineHeight = 10;
         let y = 20;
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 20;
-        const textWidth = pageWidth - (margin * 2);
 
-        // Add fancy header
-        doc.setFillColor(66, 135, 245);
-        doc.rect(0, 0, pageWidth, 40, 'F');
-        
-        // Title
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(24);
-        doc.text('AI Health Analysis Report', pageWidth/2, 25, { align: 'center' });
-        
-        // Reset text color
-        doc.setTextColor(0, 0, 0);
-        y = 50;
-        
-        // Add report metadata
-        doc.setFontSize(12);
-        doc.text(`Report Generated: ${new Date(aiReportMetadata?.generatedDate || Date.now()).toLocaleDateString()}`, margin, y);
-        y += lineHeight;
-        doc.text(`Total Data Points Analyzed: ${aiReportMetadata?.dataPoints || logs.length}`, margin, y);
+        // Add title
+        doc.setFontSize(20);
+        doc.text('AI Health Analysis Report', 20, y);
         y += lineHeight * 2;
 
-        // Add averages if available
-        if (aiReportMetadata?.averages) {
-            const { averages } = aiReportMetadata;
-            doc.text('Health Metrics Overview:', margin, y);
-            y += lineHeight;
-            doc.text(`• Blood Pressure: ${averages.blood_pressure_systolic}/${averages.blood_pressure_diastolic} mmHg`, margin + 5, y);
-            y += lineHeight;
-            doc.text(`• Glucose Level: ${averages.glucose_level} mg/dL`, margin + 5, y);
-            y += lineHeight;
-            doc.text(`• Heart Rate: ${averages.heart_rate} BPM`, margin + 5, y);
-            y += lineHeight * 2;
-        }
-        
-        // Horizontal line
-        doc.setDrawColor(200, 200, 200);
-        doc.line(margin, y, pageWidth - margin, y);
-        y += lineHeight;
+        // Add content with regular font size
+        doc.setFontSize(12);
+        doc.text(`Report Generated: ${new Date().toLocaleDateString()}`, 20, y);
+        y += lineHeight * 1.5;
 
-        // Process the AI report text - split into sections
-        const sections = aiReport.split(/\n\s*\n/);
-        
-        // Add each section
-        let currentSection = '';
-        
-        sections.forEach(section => {
-            // Check if this is a new section header (all caps or ends with a colon)
-            const lines = section.split('\n');
-            
-            lines.forEach((line, index) => {
-                // Check if we need a new page
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                
-                // Check if line looks like a header
-                if ((line.toUpperCase() === line && line.length > 3) || 
-                    line.endsWith(':') || 
-                    index === 0 && lines.length > 1) {
-                    // This is likely a section header
-                    doc.setFontSize(14);
-                    doc.setFont(undefined, 'bold');
-                    
-                    // Wrap text for header (will likely be short)
-                    const textLines = doc.splitTextToSize(line, textWidth);
-                    doc.text(textLines, margin, y);
-                    y += lineHeight * textLines.length;
-                    
-                    // Reset font
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'normal');
-                } else {
-                    // Regular content - wrap text
-                    const textLines = doc.splitTextToSize(line, textWidth);
-                    doc.text(textLines, margin, y);
-                    y += lineHeight * 0.9 * textLines.length;
-                }
-            });
-            
-            // Add space between sections
-            y += lineHeight;
-        });
-
-        // Add footer
-        const footerY = doc.internal.pageSize.getHeight() - 10;
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text('Generated by Aura Health Management System', pageWidth/2, footerY, { align: 'center' });
+        // Add AI analysis with text wrapping
+        const splitText = doc.splitTextToSize(aiReport.report, 170);
+        doc.text(splitText, 20, y);
 
         // Save the PDF
-        doc.save('ai-health-analysis-report.pdf');
+        doc.save('ai-health-analysis.pdf');
     };
 
     if (loading) {
@@ -304,51 +230,37 @@ const HealthLogList = () => {
                     onClick: generateReport,
                     className: 'bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
-                    '📊 Generate Report'
+                    'Generate Report'
+                ),
+                React.createElement('button', {
+                    onClick: generateAIReport,
+                    className: 'bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
+                }, 
+                    ' AI Health Analysis'
                 ),
                 React.createElement('button', {
                     onClick: downloadPDF,
                     className: 'bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
                 }, 
-                    '📥 Download Report'
-                ),
-                React.createElement('button', {
-                    onClick: generateAIReport,
-                    disabled: generatingAiReport,
-                    className: `bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2 ${generatingAiReport ? 'opacity-75 cursor-not-allowed' : 'hover:bg-purple-700'}`
-                }, 
-                    generatingAiReport ? 'Generating...' : '🤖 Generate AI Report'
-                ),
-                showAiReport && React.createElement('button', {
-                    onClick: downloadAIReportPDF,
-                    className: 'bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2'
-                }, 
-                    '📥 Download AI Report'
+                    ' Download Report'
                 )
             )
         ),
         
-        // AI Report Loading Indicator
-        generatingAiReport && React.createElement('div', { 
-            className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+        // Loading AI Report Indicator
+        loadingAI && React.createElement('div', { 
+            className: 'bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100 flex items-center justify-center'
         },
-            React.createElement('div', { 
-                className: 'bg-white p-8 rounded-xl shadow-xl flex flex-col items-center'
-            },
+            React.createElement('div', { className: 'flex flex-col items-center' },
                 React.createElement('div', { 
-                    className: 'animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mb-4'
+                    className: 'animate-spin rounded-full h-10 w-10 border-4 border-purple-500 border-t-transparent mb-4' 
                 }),
-                React.createElement('p', { 
-                    className: 'text-lg text-gray-800'
-                }, 'Generating AI Health Report...'),
-                React.createElement('p', { 
-                    className: 'text-sm text-gray-500 mt-2'
-                }, 'Please wait, this may take a minute.')
+                React.createElement('p', { className: 'text-gray-600' }, 'Generating AI analysis...')
             )
         ),
         
         // Show AI Report Section
-        showAiReport && aiReport && React.createElement('div', { 
+        showAIReport && aiReport && React.createElement('div', { 
             className: 'bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100 transform transition-all duration-200 hover:shadow-xl'
         },
             React.createElement('div', { className: 'flex justify-between items-center mb-4' },
@@ -356,18 +268,29 @@ const HealthLogList = () => {
                 React.createElement('div', { className: 'flex gap-2' },
                     React.createElement('button', {
                         onClick: downloadAIReportPDF,
-                        className: 'bg-purple-600 text-white px-3 py-1 text-sm rounded-lg hover:bg-purple-700 transition-colors duration-200'
-                    }, '📥 Download PDF'),
+                        className: 'text-white bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm'
+                    }, 'Download PDF'),
                     React.createElement('button', {
-                        onClick: () => setShowAiReport(false),
+                        onClick: () => shareToWhatsApp('ai'),
+                        className: 'text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm flex items-center'
+                    }, 
+                        React.createElement('span', {
+                            className: 'mr-1',
+                            role: 'img',
+                            'aria-label': 'WhatsApp'
+                        }, ),
+                        'Share to WhatsApp'
+                    ),
+                    React.createElement('button', {
+                        onClick: () => setShowAIReport(false),
                         className: 'text-gray-500 hover:text-gray-700'
                     }, '✕')
                 )
             ),
             React.createElement('div', { className: 'prose max-w-none' },
-                React.createElement('div', {
-                    className: 'ai-report whitespace-pre-line',
-                    dangerouslySetInnerHTML: { __html: aiReport.replace(/\n/g, '<br />') }
+                React.createElement('div', { 
+                    className: 'whitespace-pre-wrap text-gray-700', 
+                    dangerouslySetInnerHTML: { __html: aiReport.report.replace(/\n/g, '<br />') } 
                 })
             )
         ),
@@ -378,10 +301,22 @@ const HealthLogList = () => {
         },
             React.createElement('div', { className: 'flex justify-between items-center mb-4' },
                 React.createElement('h3', { className: 'text-xl font-semibold' }, 'Health Report Summary'),
-                React.createElement('button', {
-                    onClick: () => setShowReport(false),
-                    className: 'text-gray-500 hover:text-gray-700'
-                }, '✕')
+                React.createElement('div', { className: 'flex gap-2' },
+                    React.createElement('button', {
+                        onClick: () => shareToWhatsApp('regular'),
+                        className: 'text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm flex items-center'
+                    }, 
+                        React.createElement('span', {
+                            className: 'mr-1',
+                            dangerouslySetInnerHTML: { __html: '&nbsp;<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.415 14.382c-.298-.149-1.759-.867-2.031-.967-.272-.099-.47-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.019-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.669-1.612-.916-2.207-.241-.579-.486-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.15.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.57-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M20.516 3.455C18.246 1.229 15.17 0 11.939 0 5.409 0 .095 5.313.094 11.845c0 2.087.547 4.126 1.589 5.928L0 24l6.36-1.663c1.737.95 3.699 1.45 5.696 1.45 6.53 0 11.844-5.313 11.845-11.845 0-3.163-1.231-6.138-3.385-8.486zM11.939 21.621c-1.771 0-3.506-.473-5.022-1.366l-.355-.215-3.735.979 1.004-3.695-.236-.377c-.98-1.551-1.499-3.35-1.499-5.202C2.094 6.641 6.455 2.28 11.939 2.28c2.644 0 5.127 1.03 6.991 2.895 1.863 1.866 2.891 4.394 2.89 7.05.001 5.398-4.36 9.76-9.881 9.76z"/></svg>&nbsp;' }
+                        }),
+                        'Share to WhatsApp'
+                    ),
+                    React.createElement('button', {
+                        onClick: () => setShowReport(false),
+                        className: 'text-gray-500 hover:text-gray-700 ml-2'
+                    }, '✕')
+                )
             ),
             React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' },
                 React.createElement('div', null,
