@@ -57,7 +57,7 @@ const Navbar = () => {
                         React.createElement('span', {
                             key: 'welcome',
                             className: 'text-white self-center px-2'
-                        }, 'Welcome!'),
+                        }, `Welcome, ${currentUser.name}!`),
                         React.createElement('button', {
                             key: 'logout',
                             onClick: handleLogout,

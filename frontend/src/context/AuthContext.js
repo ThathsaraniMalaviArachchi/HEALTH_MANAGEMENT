@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
           
           setCurrentUser({
             id: payload.userId,
+            name: payload.name || 'User', // Add name from token payload
             role: payload.role || 'user', // Default to 'user' if role is not present
             isAuthenticated: true
           });
