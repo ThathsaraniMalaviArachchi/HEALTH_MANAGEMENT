@@ -23,6 +23,7 @@ const authController = {
             
             const token = jwt.sign({ 
                 userId: user._id,
+                name: user.name,
                 role: user.role 
             }, 'your_jwt_secret', { expiresIn: '24h' });
             
@@ -47,6 +48,7 @@ const authController = {
 
             const token = jwt.sign({ 
                 userId: user._id,
+                name: user.name,
                 role: user.role 
             }, 'your_jwt_secret', { expiresIn: '24h' });
             
