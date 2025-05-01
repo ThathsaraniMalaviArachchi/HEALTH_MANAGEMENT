@@ -2,17 +2,16 @@ const jwt = require('jsonwebtoken');
 
 const auth = async (req, res, next) => {
     try {
-        // Temporarily allow all requests for testing
-        req.userId = 'test_user';
-        next();
+        const token = req.header('Authorization')?.replace('Bearer ', '');
         
-        // Original authentication code commented for now
-        /*
-        const token = req.header('Authorization').replace('Bearer ', '');
-        const decoded = jwt.verify(token, 'your_jwt_secret1111');
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided, please authenticate' });
+        }
+        
+        const decoded = jwt.verify(token, 'your_jwt_secret');
         req.userId = decoded.userId;
+        req.userRole = decoded.role;
         next();
-        */
     } catch (error) {
         res.status(401).json({ error: 'Please authenticate' });
     }
