@@ -160,30 +160,32 @@ const HomePage = () => {
                 {/* Features Section - Only shown to regular users */}
                 {!isAdmin() && !showForm && !showLogs && !showHealthOptions && (
                     <div className="relative bg-gradient-to-r from-blue-600 to-teal-400 text-white py-16 px-6">
-                        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {[
-                                {
-                                    title: 'Automated Data Collection',
-                                    description: 'Connect with glucose monitors and BP machines for automatic data recording.'
-                                },
-                                {
-                                    title: 'Progress Tracking',
-                                    description: 'View your health metrics over time with detailed analytics and trends.'
-                                },
-                                {
-                                    title: 'Data Management',
-                                    description: 'Easy to update or remove health logs with full control over your data.'
-                                }
-                            ].map(feature => (
-                                <div key={feature.title} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 border-t-4 border-blue-500 text-gray-800">
-                                    <h3 className="text-2xl font-bold mb-3">
-                                        {feature.title}
-                                    </h3>
-                                    <p className="leading-relaxed">
-                                        {feature.description}
-                                    </p>
-                                </div>
-                            ))}
+                        <div className="max-w-4xl mx-auto flex flex-col items-center">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                                {[
+                                    {
+                                        title: 'Automated Data Collection',
+                                        description: 'Connect with glucose monitors and BP machines for automatic data recording.'
+                                    },
+                                    {
+                                        title: 'Progress Tracking',
+                                        description: 'View your health metrics over time with detailed analytics and trends.'
+                                    },
+                                    {
+                                        title: 'Data Management',
+                                        description: 'Easy to update or remove health logs with full control over your data.'
+                                    }
+                                ].map(feature => (
+                                    <div key={feature.title} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 border-t-4 border-blue-500 text-gray-800 flex flex-col h-full">
+                                        <h3 className="text-2xl font-bold mb-3 text-center">
+                                            {feature.title}
+                                        </h3>
+                                        <p className="leading-relaxed text-center">
+                                            {feature.description}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
