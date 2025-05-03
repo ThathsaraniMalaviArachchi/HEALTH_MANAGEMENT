@@ -260,48 +260,51 @@ const MedicationManagement = () => {
                     </button>
                 </div>
             ) : (
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white">
-                            <thead className="bg-gray-800 text-white">
-                                <tr>
-                                    <th className="py-3 px-4 text-left">Medication</th>
-                                    <th className="py-3 px-4 text-left">Dosage</th>
-                                    <th className="py-3 px-4 text-left">Frequency</th>
-                                    <th className="py-3 px-4 text-left">Start Date</th>
-                                    <th className="py-3 px-4 text-left">End Date</th>
-                                    <th className="py-3 px-4 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {medications.map(medication => (
-                                    <tr key={medication._id} className="hover:bg-gray-50">
-                                        <td className="py-3 px-4">{medication.name}</td>
-                                        <td className="py-3 px-4">{medication.dosage}</td>
-                                        <td className="py-3 px-4">{medication.frequency}</td>
-                                        <td className="py-3 px-4">{new Date(medication.start_date).toLocaleDateString()}</td>
-                                        <td className="py-3 px-4">
-                                            {medication.end_date ? new Date(medication.end_date).toLocaleDateString() : '-'}
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            <button
-                                                onClick={() => handleEdit(medication)}
-                                                className="text-blue-600 hover:text-blue-800 mr-3"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(medication._id)}
-                                                className="text-red-600 hover:text-red-800"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {medications.map(medication => (
+                        <div key={medication._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                            <div className="bg-blue-500 text-white p-4">
+                                <h3 className="text-xl font-bold truncate">{medication.name}</h3>
+                                <p className="text-blue-100">{medication.dosage}</p>
+                            </div>
+                            <div className="p-4">
+                                <div className="mb-3">
+                                    <p className="text-sm font-semibold text-gray-600">Frequency</p>
+                                    <p className="text-gray-800">{medication.frequency}</p>
+                                </div>
+                                <div className="mb-3 grid grid-cols-2 gap-2">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-600">Start Date</p>
+                                        <p className="text-gray-800">{new Date(medication.start_date).toLocaleDateString()}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-600">End Date</p>
+                                        <p className="text-gray-800">{medication.end_date ? new Date(medication.end_date).toLocaleDateString() : '-'}</p>
+                                    </div>
+                                </div>
+                                {medication.notes && (
+                                    <div className="mb-3">
+                                        <p className="text-sm font-semibold text-gray-600">Notes</p>
+                                        <p className="text-gray-800 text-sm">{medication.notes}</p>
+                                    </div>
+                                )}
+                                <div className="flex justify-end mt-4 pt-3 border-t border-gray-200">
+                                    <button
+                                        onClick={() => handleEdit(medication)}
+                                        className="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 mr-2"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(medication._id)}
+                                        className="bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>
