@@ -15,6 +15,8 @@ const HealthLogList = () => {
     const [aiReport, setAIReport] = useState(null);
     const [showAIReport, setShowAIReport] = useState(false);
     const [loadingAI, setLoadingAI] = useState(false);
+    const [searchDate, setSearchDate] = useState('');
+    const [searchType, setSearchType] = useState('full'); // Add search type state
 
     const fetchLogs = async () => {
         try {
@@ -200,6 +202,25 @@ const HealthLogList = () => {
         doc.save('ai-health-analysis.pdf');
     };
 
+    const filteredLogs = logs.filter(log => {
+        if (!searchDate) return true;
+        
+        const logDate = new Date(log.date);
+        const logDay = logDate.getDate().toString();
+        const logMonth = (logDate.getMonth() + 1).toString();
+        const logFullDate = logDate.toLocaleDateString();
+
+        switch (searchType) {
+            case 'day':
+                return logDay === searchDate;
+            case 'month':
+                return logMonth === searchDate;
+            case 'full':
+            default:
+                return logFullDate === searchDate;
+        }
+    });
+
     if (loading) {
         return React.createElement('div', { 
             className: 'flex items-center justify-center min-h-[400px]'
@@ -247,6 +268,64 @@ const HealthLogList = () => {
             )
         ),
         
+        React.createElement('div', { 
+            className: 'mb-8 p-6 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md mx-auto max-w-2xl'
+        },
+            React.createElement('div', { 
+                className: 'flex flex-col sm:flex-row gap-4 items-center justify-center'
+            },
+                React.createElement('select', {
+                    value: searchType,
+                    onChange: (e) => {
+                        setSearchType(e.target.value);
+                        setSearchDate('');
+                    },
+                    className: 'px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-700 shadow-sm transition-all duration-200 hover:border-blue-400 min-w-[140px] cursor-pointer outline-none'
+                },
+                    React.createElement('option', { value: 'full' }, 'Full Date'),
+                    React.createElement('option', { value: 'day' }, 'Day Only'),
+                    React.createElement('option', { value: 'month' }, 'Month Only')
+                ),
+                React.createElement('div', {
+                    className: 'relative flex-1'
+                },
+                    React.createElement('input', {
+                        type: searchType === 'full' ? 'text' : 'number',
+                        min: searchType === 'month' ? '1' : searchType === 'day' ? '1' : null,
+                        max: searchType === 'month' ? '12' : searchType === 'day' ? '31' : null,
+                        placeholder: searchType === 'full' ? 'Search by date (e.g., 5/3/2025)' :
+                                   searchType === 'day' ? 'Enter day (1-31)' : 
+                                   'Enter month (1-12)',
+                        value: searchDate,
+                        onChange: (e) => setSearchDate(e.target.value),
+                        className: 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400 pl-10'
+                    }),
+                    React.createElement('div', {
+                        className: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                    },
+                        React.createElement('svg', {
+                            className: 'w-5 h-5',
+                            fill: 'none',
+                            stroke: 'currentColor',
+                            viewBox: '0 0 24 24',
+                            xmlns: 'http://www.w3.org/2000/svg'
+                        },
+                            React.createElement('path', {
+                                strokeLinecap: 'round',
+                                strokeLinejoin: 'round',
+                                strokeWidth: '2',
+                                d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                            })
+                        )
+                    )
+                ),
+                searchDate && React.createElement('button', {
+                    onClick: () => setSearchDate(''),
+                    className: 'px-4 py-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200'
+                }, 'Clear')
+            )
+        ),
+
         // Loading AI Report Indicator
         loadingAI && React.createElement('div', { 
             className: 'bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100 flex items-center justify-center'
@@ -349,13 +428,13 @@ const HealthLogList = () => {
                 })
             ) : null,
 
-        logs.length === 0 ? 
+        filteredLogs.length === 0 ? 
             React.createElement('div', { 
                 className: 'text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200'
             }, 
                 React.createElement('p', { 
                     className: 'text-gray-500 text-lg'
-                }, 'No health logs found.')
+                }, searchDate ? 'No health logs found for this date.' : 'No health logs found.')
             ) :
             React.createElement('div', { 
                 className: 'bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100'
@@ -377,7 +456,7 @@ const HealthLogList = () => {
                             )
                         ),
                         React.createElement('tbody', { className: 'divide-y divide-gray-200' },
-                            logs.map(log => 
+                            filteredLogs.map(log => 
                                 React.createElement('tr', { key: log._id },
                                     React.createElement('td', { className: 'px-6 py-4 whitespace-nowrap' }, new Date(log.date).toLocaleDateString()),
                                     React.createElement('td', { className: 'px-6 py-4 whitespace-nowrap' }, log.blood_pressure_systolic),
