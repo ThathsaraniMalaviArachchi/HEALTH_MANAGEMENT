@@ -8,6 +8,7 @@ import DoctorManagement from './components/DoctorManagement';
 import AppointmentBooking from './components/AppointmentBooking';
 import AppointmentManagement from './components/AppointmentManagement';
 import UserManagement from './components/UserManagement';
+import MedicationManagement from './components/MedicationManagement';
 import { AuthProvider } from './context/AuthContext';
 
 const App = () => {
@@ -26,7 +27,7 @@ const App = () => {
                         <Route path="/book-appointment" element={<AppointmentBooking />} />
                         <Route path="/manage-appointments" element={<AppointmentManagement />} />
                         <Route path="/manage-users" element={<UserManagement />} />
-                        {/* Add more protected routes here */}
+                        <Route path="/medications" element={<MedicationManagement />} />
                     </Route>
                 </Routes>
             </Router>

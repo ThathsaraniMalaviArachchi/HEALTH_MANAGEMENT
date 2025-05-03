@@ -241,3 +241,70 @@ export const userAPI = {
         return response.data;
     }
 };
+
+export const medicationAPI = {
+    // Get all medications
+    getAllMedications: async () => {
+        try {
+            const response = await api.get('/medications', {
+                headers: getAuthHeader()
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching medications:', error);
+            throw error;
+        }
+    },
+
+    // Get medication by ID
+    getMedication: async (id) => {
+        try {
+            const response = await api.get(`/medications/${id}`, {
+                headers: getAuthHeader()
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching medication:', error);
+            throw error;
+        }
+    },
+
+    // Create a new medication
+    createMedication: async (medicationData) => {
+        try {
+            const response = await api.post('/medications', medicationData, {
+                headers: getAuthHeader()
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error creating medication:', error);
+            throw error;
+        }
+    },
+
+    // Update a medication
+    updateMedication: async (id, medicationData) => {
+        try {
+            const response = await api.put(`/medications/${id}`, medicationData, {
+                headers: getAuthHeader()
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating medication:', error);
+            throw error;
+        }
+    },
+
+    // Delete a medication
+    deleteMedication: async (id) => {
+        try {
+            const response = await api.delete(`/medications/${id}`, {
+                headers: getAuthHeader()
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting medication:', error);
+            throw error;
+        }
+    }
+};

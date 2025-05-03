@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const doctorRoutes = require('./routes/doctors');
 const appointmentRoutes = require('./routes/appointments');
 const userRoutes = require('./routes/users');
+const medicationRoutes = require('./routes/medications');
 
 const app = express();
 
@@ -40,6 +41,7 @@ const startServer = async () => {
         app.use('/api/doctors', doctorRoutes);
         app.use('/api/appointments', appointmentRoutes);
         app.use('/api/users', userRoutes);
+        app.use('/api/medications', medicationRoutes);
 
         // Move error handler to the end
         app.use((err, req, res, next) => {
