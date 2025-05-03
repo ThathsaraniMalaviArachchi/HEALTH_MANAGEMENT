@@ -269,31 +269,64 @@ const HealthLogList = () => {
         ),
         
         React.createElement('div', { 
-            className: 'mb-6 flex gap-4 items-center'
+            className: 'mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md'
         },
-            React.createElement('select', {
-                value: searchType,
-                onChange: (e) => {
-                    setSearchType(e.target.value);
-                    setSearchDate(''); // Clear search when changing type
-                },
-                className: 'px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            React.createElement('h3', {
+                className: 'text-lg font-semibold text-gray-700 mb-4'
+            }, 'Search Health Logs'),
+            React.createElement('div', { 
+                className: 'flex flex-col sm:flex-row gap-4 items-start sm:items-center'
             },
-                React.createElement('option', { value: 'full' }, 'Full Date'),
-                React.createElement('option', { value: 'day' }, 'Day Only'),
-                React.createElement('option', { value: 'month' }, 'Month Only')
-            ),
-            React.createElement('input', {
-                type: searchType === 'full' ? 'text' : 'number',
-                min: searchType === 'month' ? '1' : searchType === 'day' ? '1' : null,
-                max: searchType === 'month' ? '12' : searchType === 'day' ? '31' : null,
-                placeholder: searchType === 'full' ? 'Search by date (e.g., 5/3/2025)' :
-                           searchType === 'day' ? 'Enter day (1-31)' : 
-                           'Enter month (1-12)',
-                value: searchDate,
-                onChange: (e) => setSearchDate(e.target.value),
-                className: 'w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-            })
+                React.createElement('select', {
+                    value: searchType,
+                    onChange: (e) => {
+                        setSearchType(e.target.value);
+                        setSearchDate('');
+                    },
+                    className: 'px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-700 shadow-sm transition-all duration-200 hover:border-blue-400 min-w-[140px] cursor-pointer outline-none'
+                },
+                    React.createElement('option', { value: 'full' }, 'Full Date'),
+                    React.createElement('option', { value: 'day' }, 'Day Only'),
+                    React.createElement('option', { value: 'month' }, 'Month Only')
+                ),
+                React.createElement('div', {
+                    className: 'relative flex-1'
+                },
+                    React.createElement('input', {
+                        type: searchType === 'full' ? 'text' : 'number',
+                        min: searchType === 'month' ? '1' : searchType === 'day' ? '1' : null,
+                        max: searchType === 'month' ? '12' : searchType === 'day' ? '31' : null,
+                        placeholder: searchType === 'full' ? 'Search by date (e.g., 5/3/2025)' :
+                                   searchType === 'day' ? 'Enter day (1-31)' : 
+                                   'Enter month (1-12)',
+                        value: searchDate,
+                        onChange: (e) => setSearchDate(e.target.value),
+                        className: 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400 pl-10'
+                    }),
+                    React.createElement('div', {
+                        className: 'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                    },
+                        React.createElement('svg', {
+                            className: 'w-5 h-5',
+                            fill: 'none',
+                            stroke: 'currentColor',
+                            viewBox: '0 0 24 24',
+                            xmlns: 'http://www.w3.org/2000/svg'
+                        },
+                            React.createElement('path', {
+                                strokeLinecap: 'round',
+                                strokeLinejoin: 'round',
+                                strokeWidth: '2',
+                                d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                            })
+                        )
+                    )
+                ),
+                searchDate && React.createElement('button', {
+                    onClick: () => setSearchDate(''),
+                    className: 'px-4 py-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200'
+                }, 'Clear')
+            )
         ),
 
         // Loading AI Report Indicator
