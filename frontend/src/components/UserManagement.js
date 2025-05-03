@@ -25,12 +25,14 @@ const UserManagement = () => {
     const fetchUsers = async () => {
         try {
             setLoading(true);
+            console.log('Fetching users...'); // Debugging log
             const data = await userAPI.getAllUsers();
+            console.log('Fetched users:', data); // Debugging log
             setUsers(data);
             setError('');
         } catch (err) {
+            console.error('Failed to fetch users:', err); // Debugging log
             setError('Failed to load users');
-            console.error(err);
         } finally {
             setLoading(false);
         }

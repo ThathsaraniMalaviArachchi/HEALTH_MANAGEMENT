@@ -134,7 +134,7 @@ const AppointmentManagement = () => {
             
             await appointmentAPI.createAppointment(appointmentData);
             setSuccess('Appointment booked successfully!');
-            
+           
             // Reset form
             setSelectedDoctor('');
             setAppointmentDate('');
