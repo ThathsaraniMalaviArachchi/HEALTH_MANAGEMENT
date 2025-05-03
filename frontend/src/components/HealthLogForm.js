@@ -110,7 +110,7 @@ const HealthLogForm = ({ onSuccess, initialData = null }) => {
 
     return React.createElement('div', { className: 'bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto border border-gray-100' },
         React.createElement('h2', { 
-            className: 'text-3xl font-bold mb-8 text-gray-800 text-center' 
+            className: 'text-3xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent mb-8 text-center' 
         }, 
             initialData ? 'Update Health Log' : 'Add New Health Log'
         ),
