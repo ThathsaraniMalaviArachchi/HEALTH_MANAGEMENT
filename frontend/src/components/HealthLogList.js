@@ -269,10 +269,10 @@ const HealthLogList = () => {
         ),
         
         React.createElement('div', { 
-            className: 'mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md mx-auto max-w-2xl'
+            className: 'mb-8 p-6 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md mx-auto max-w-2xl'
         },
             React.createElement('h3', {
-                className: 'text-lg font-semibold text-gray-700 mb-4 text-center'
+                className: 'text-lg font-semibold text-white mb-4 text-center'
             }, 'Search Health Logs'),
             React.createElement('div', { 
                 className: 'flex flex-col sm:flex-row gap-4 items-center justify-center'
