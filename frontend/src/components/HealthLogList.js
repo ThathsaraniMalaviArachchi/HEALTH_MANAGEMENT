@@ -15,6 +15,8 @@ const HealthLogList = () => {
     const [aiReport, setAIReport] = useState(null);
     const [showAIReport, setShowAIReport] = useState(false);
     const [loadingAI, setLoadingAI] = useState(false);
+    const [searchDate, setSearchDate] = useState('');
+    const [searchType, setSearchType] = useState('full'); // Add search type state
 
     const fetchLogs = async () => {
         try {
@@ -200,6 +202,25 @@ const HealthLogList = () => {
         doc.save('ai-health-analysis.pdf');
     };
 
+    const filteredLogs = logs.filter(log => {
+        if (!searchDate) return true;
+        
+        const logDate = new Date(log.date);
+        const logDay = logDate.getDate().toString();
+        const logMonth = (logDate.getMonth() + 1).toString();
+        const logFullDate = logDate.toLocaleDateString();
+
+        switch (searchType) {
+            case 'day':
+                return logDay === searchDate;
+            case 'month':
+                return logMonth === searchDate;
+            case 'full':
+            default:
+                return logFullDate === searchDate;
+        }
+    });
+
     if (loading) {
         return React.createElement('div', { 
             className: 'flex items-center justify-center min-h-[400px]'
@@ -247,6 +268,34 @@ const HealthLogList = () => {
             )
         ),
         
+        React.createElement('div', { 
+            className: 'mb-6 flex gap-4 items-center'
+        },
+            React.createElement('select', {
+                value: searchType,
+                onChange: (e) => {
+                    setSearchType(e.target.value);
+                    setSearchDate(''); // Clear search when changing type
+                },
+                className: 'px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            },
+                React.createElement('option', { value: 'full' }, 'Full Date'),
+                React.createElement('option', { value: 'day' }, 'Day Only'),
+                React.createElement('option', { value: 'month' }, 'Month Only')
+            ),
+            React.createElement('input', {
+                type: searchType === 'full' ? 'text' : 'number',
+                min: searchType === 'month' ? '1' : searchType === 'day' ? '1' : null,
+                max: searchType === 'month' ? '12' : searchType === 'day' ? '31' : null,
+                placeholder: searchType === 'full' ? 'Search by date (e.g., 5/3/2025)' :
+                           searchType === 'day' ? 'Enter day (1-31)' : 
+                           'Enter month (1-12)',
+                value: searchDate,
+                onChange: (e) => setSearchDate(e.target.value),
+                className: 'w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            })
+        ),
+
         // Loading AI Report Indicator
         loadingAI && React.createElement('div', { 
             className: 'bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100 flex items-center justify-center'
@@ -349,13 +398,13 @@ const HealthLogList = () => {
                 })
             ) : null,
 
-        logs.length === 0 ? 
+        filteredLogs.length === 0 ? 
             React.createElement('div', { 
                 className: 'text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200'
             }, 
                 React.createElement('p', { 
                     className: 'text-gray-500 text-lg'
-                }, 'No health logs found.')
+                }, searchDate ? 'No health logs found for this date.' : 'No health logs found.')
             ) :
             React.createElement('div', { 
                 className: 'bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100'
@@ -377,7 +426,7 @@ const HealthLogList = () => {
                             )
                         ),
                         React.createElement('tbody', { className: 'divide-y divide-gray-200' },
-                            logs.map(log => 
+                            filteredLogs.map(log => 
                                 React.createElement('tr', { key: log._id },
                                     React.createElement('td', { className: 'px-6 py-4 whitespace-nowrap' }, new Date(log.date).toLocaleDateString()),
                                     React.createElement('td', { className: 'px-6 py-4 whitespace-nowrap' }, log.blood_pressure_systolic),
