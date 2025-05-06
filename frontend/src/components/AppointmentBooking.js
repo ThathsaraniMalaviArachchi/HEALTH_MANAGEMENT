@@ -32,50 +32,8 @@ const AppointmentBooking = () => {
         }
     };
     
-    const fetchUserAppointments = async () => {
-        try {
-            const appointments = await appointmentAPI.getUserAppointments();
-            setUserAppointments(appointments);
-        } catch (err) {
-            console.error('Failed to fetch user appointments:', err);
-        }
-    };
-    
-    const selectDoctor = (doctor) => {
-        setSelectedDoctor(doctor);
-        setStep(2);
-    };
-    
-    const handleDateChange = (e) => {
-        setSelectedDate(e.target.value);
-        setStep(3);
-    };
-    
-    const generateTimeSlots = (startTime, endTime) => {
-        const slots = [];
-        let start = new Date(`2000-01-01T${startTime}`);
-        const end = new Date(`2000-01-01T${endTime}`);
-        
-        while (start < end) {
-            const timeString = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            slots.push(timeString);
-            start.setHours(start.getHours() + 1); // 1-hour blocks
-        }
-        
-        return slots;
-    };
-    
-    const getAvailableTimeSlotsForDate = () => {
-        if (!selectedDoctor || !selectedDate) return [];
-        
-        const date = new Date(selectedDate);
-        const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
-        
-        const availableDay = selectedDoctor.availableTimes.find(t => t.day === dayOfWeek);
-        if (!availableDay) return [];
-        
-        return generateTimeSlots(availableDay.startTime, availableDay.endTime);
-    };
+//
+
     
     const handleTimeSlotSelect = (timeSlot) => {
         setSelectedTimeSlot(timeSlot);
