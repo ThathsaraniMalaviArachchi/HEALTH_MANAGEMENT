@@ -199,7 +199,38 @@ const AppointmentBooking = () => {
                     </div>
                 </div>
                 
-
+                {/* Step 1: Select Doctor */}
+                {step === 1 && (
+                    <div>
+                        <h3 className="font-semibold text-lg mb-3">Choose a Doctor</h3>
+                        {loading ? (
+                            <div className="text-center py-4">Loading doctors...</div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {doctors.map(doctor => (
+                                    <button
+                                        key={doctor._id}
+                                        onClick={() => selectDoctor(doctor)}
+                                        className="border rounded-lg p-4 hover:bg-blue-50 transition-colors text-left flex flex-col h-full"
+                                    >
+                                        <div className="bg-blue-100 text-blue-800 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <h4 className="font-bold text-lg">{doctor.name}</h4>
+                                        <p className="text-gray-600">{doctor.specialization}</p>
+                                        <p className="text-gray-500 text-sm">{doctor.hospital}</p>
+                                        <div className="text-sm mt-2">
+                                            <p className="font-semibold">Available on:</p>
+                                            <p>{doctor.availableTimes.map(time => time.day).join(', ')}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
                 
                 {/* Step 2: Select Date */}
                 {step === 2 && selectedDoctor && (
