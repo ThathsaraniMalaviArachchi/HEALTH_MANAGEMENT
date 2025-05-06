@@ -20,7 +20,7 @@ const App = () => {
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     
-                    {/* Protected routes */}
+                    {/* Protected routes  */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/doctors" element={<DoctorManagement />} />
