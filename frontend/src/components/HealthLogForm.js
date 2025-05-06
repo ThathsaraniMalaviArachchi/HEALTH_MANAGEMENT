@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { healthLogsAPI } from '../services/api';
 
+// This component is used to add or update health logs. It takes an optional initialData prop for editing existing logs.
 const HealthLogForm = ({ onSuccess, initialData = null }) => {
     const [formData, setFormData] = useState({
         blood_pressure_systolic: initialData?.blood_pressure_systolic || '',
@@ -15,6 +16,7 @@ const HealthLogForm = ({ onSuccess, initialData = null }) => {
         glucose_level: { min: 30, max: 600, unit: 'mg/dL' },
         heart_rate: { min: 40, max: 200, unit: 'BPM' }
     };
+
 
     const getWarningMessage = (name, value) => {
         const range = ranges[name];
@@ -40,7 +42,7 @@ const HealthLogForm = ({ onSuccess, initialData = null }) => {
                 [name]: value
             }));
             
-            // Check for warnings on each change
+            // Check for warnings on each change 
             const warning = getWarningMessage(name, value);
             setWarnings(prev => ({
                 ...prev,
