@@ -43,7 +43,12 @@ const HealthLogForm = ({ onSuccess, initialData = null }) => {
             }));
             
             // Check for warnings on each change  
-
+            const warning = getWarningMessage(name, value);
+            setWarnings(prev => ({
+                ...prev,
+                [name]: warning
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
