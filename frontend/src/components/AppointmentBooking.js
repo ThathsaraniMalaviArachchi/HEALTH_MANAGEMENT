@@ -65,12 +65,7 @@ const AppointmentBooking = () => {
             await appointmentAPI.createAppointment(appointmentData);
             setSuccess('Appointment booked successfully!');
             
-            // Reset form
-            setSelectedDoctor(null);
-            setSelectedDate('');
-            setSelectedTimeSlot('');
-            setAppointmentReason('');
-            setStep(1);
+            
             
             // Refresh user appointments
             fetchUserAppointments();
