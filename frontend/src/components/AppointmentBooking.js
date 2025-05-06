@@ -236,7 +236,7 @@ const AppointmentBooking = () => {
                     </div>
                 )}
                 
-                {/* Step 3: Select Time */}
+                {/* Step 3: Select Time  */}
                 {step === 3 && selectedDoctor && selectedDate && (
                     <div>
                         <h3 className="font-semibold text-lg mb-3">Select Appointment Time</h3>
